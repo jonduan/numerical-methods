@@ -12,17 +12,19 @@ import requests
 
 def _get_dep_rates_data(base_url, version):
     """Downloads the depreciation rate data."""
-    tmp_url = base_url + 'v' + str(version) + '/depreciation_rates.zip'
+    tmp_url = base_url + '/depreciation_rates.zip'
     tmp_buffer = requests.get(url=tmp_url)
     tmp_zip = zipfile.ZipFile(StringIO(tmp_buffer.content))
     tmp_zip.extract('depreciation_rates.dta')
 
 def _get_pwt_data(base_url, version):
     """Downloads the Penn World Tables (PWT) data."""
-    tmp_url = base_url + 'v' + str(version) + '/pwt' + str(version) + '.zip'
+    tmp_url = base_url +  '/pwt' + str(version) + '.dta'
     tmp_buffer = requests.get(url=tmp_url)
-    tmp_zip = zipfile.ZipFile(StringIO(tmp_buffer.content))
-    tmp_zip.extract('pwt' + str(version) + '.dta')
+    #tmp_zip = zipfile.ZipFile(StringIO(tmp_buffer.content))
+    #tmp_zip.extract('pwt' + str(version) + '.dta')
+    with open('pwt' + str(version) + '.dta', "wb") as data:
+        data.write(tmp_buffer.content)
   
 def download_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/', version=80):
     """
@@ -41,7 +43,7 @@ def download_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/', vers
     _get_dep_rates_data(base_url, version)
     _get_pwt_data(base_url, version)
        
-def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/', version=80):
+def load_pwt_data(base_url='http://www.rug.nl/ggdc/docs/', version=90):
     """
     Load the Penn World Tables (PWT) data as a Pandas Panel object.
 
@@ -49,9 +51,9 @@ def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/', version=
  
         base_url: (str) Base url to use for the download. Current default is:
             
-                      'http://www.rug.nl/research/ggdc/data/pwt/'
+                      'http://www.rug.nl/ggdc/docs/'
             
-        version: (int) Version number for PWT data. Default is 80 (which is the 
+        version: (int) Version number for PWT data. Default is 90 (which is the 
                   most recent version).
                                     
     Returns:
@@ -83,5 +85,5 @@ def load_pwt_data(base_url='http://www.rug.nl/research/ggdc/data/pwt/', version=
     return pwt_panel_data
         
 if __name__ == '__main__':
-    pwt_panel_data = load_pwt_data(version=80)
+    pwt_panel_data = load_pwt_data(version=90)
     print(pwt_panel_data)
